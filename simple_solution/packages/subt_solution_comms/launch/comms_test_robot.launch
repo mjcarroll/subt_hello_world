@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launch>
+  <!-- The name/namespace of this robot -->
+  <arg name="name"/>
+
+  <!-- communications parameters -->
+  <arg name="graph_port" default="5000"/>
+  <arg name="pose_port" default="5001"/>
+
+  <group ns="$(arg name)">
+    <!-- comms manager -->
+    <node pkg="subt_solution_comms" type="subt_solution_comms_node" name="comms_manager" output="screen">
+      <param name="robot_name" value="$(arg name)"/>
+      <param name="graph_port" value="$(arg graph_port)"/>
+      <param name="pose_port" value="$(arg pose_port)"/>
+    </node>
+  </group>
+</launch>

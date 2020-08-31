@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>subt_solution_launch</name>
+  <version>1.0.0</version>
+  <description>Launch/bringup files for SubT Solution</description>
+
+  <author email="michael@openrobotics.org">Michael Carroll</author>
+
+  <maintainer email="michael@openrobotics.org">Michael Carroll</maintainer>
+
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>artifact_localization</exec_depend>
+  <exec_depend>blob_detection</exec_depend>
+  <exec_depend>camera_fix</exec_depend>
+  <exec_depend>cartographer_ros</exec_depend>
+  <exec_depend>dwa_local_planner</exec_depend>
+  <exec_depend>global_planner</exec_depend>
+  <exec_depend>move_base</exec_depend>
+  <exec_depend>navigation_control</exec_depend>
+  <exec_depend>periodic_data_saver</exec_depend>
+  <exec_depend>subt_robot_control</exec_depend>
+  <exec_depend>subt_solution_comms</exec_depend>
+  <exec_depend>tf</exec_depend>
+  <exec_depend>uav_filter</exec_depend>
+  <exec_depend>uav_navigation</exec_depend>
+  <exec_depend>ugv_filter</exec_depend>
+  <exec_depend>z_axis_flattener</exec_depend>
+</package>

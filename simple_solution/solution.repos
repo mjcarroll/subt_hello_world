@@ -1,0 +1,17 @@
+repositories:
+  thirdparty/darknet_ros:
+    type: git
+    url: git@github.com:leggedrobotics/darknet_ros.git
+    version: master
+  subt:
+    type: git
+    url: git@github.com:osrf/subt.git
+    version: master
+  subt_solution:
+    type: git
+    url: git@github.com:osrf/subt_solution.git
+    version: master
+  forked_global_planner:
+    type: git
+    url: https://github.com/mjcarroll/navigation.git
+    version: segfault_at_border

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>subt_solution_comms</name>
+  <version>1.0.0</version>
+  <description>
+    Handles communications through the SubT framework and relays messages
+    received via the SubT communications framework to a robot's ROS topics.
+  </description>
+
+  <author email="ashton@openrobotics.org">Ashton Larkin </author>
+  <maintainer email="ashton@openrobotics.org">Ashton Larkin </maintainer>
+
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>subt_ign</depend>
+  <depend>std_msgs</depend>
+  <depend>subt_communication_broker</depend>
+  <depend>ignition-common3</depend>
+</package>

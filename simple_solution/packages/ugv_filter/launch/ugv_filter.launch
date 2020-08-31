@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <!-- The name/namespace of this robot -->
+  <arg name="name"/>
+  <!-- The pointcloud topic of this robot -->
+  <arg name="pc_topic" default="points"/>
+
+  <!-- The hight to flaten to -->
+  <arg name="flat_height" default="-0.25"/>
+
+  <!-- The max slope to filter from -->
+  <arg name="slope" default="45"/>
+
+  <!-- The frame to flat relative to -->
+  <arg name="flat_frame" default="odom"/>
+
+  <!-- If filter is deleting or flatening -->
+  <arg name="delete" default="true"/>
+
+  <group ns="$(arg name)">
+    <!-- uav_filter node -->
+    <node pkg="ugv_filter" type="ugv_filter" name="ugv_filter">
+      <remap from="input" to="$(arg pc_topic)" />
+      <remap from="output" to="points_filtered_z" />
+      <param name="name" value="$(arg name)"/>
+      <param name="slope" value="$(arg slope)"/>
+      <param name="flat_height" value="$(arg flat_height)"/>
+      <param name="flat_frame" value="$(arg flat_frame)"/>
+      <param name="delete" value="$(arg delete)"/>
+    </node>
+  </group>
+
+</launch>

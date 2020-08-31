@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <!-- The name/namespace of this robot -->
+  <arg name="name"/>
+
+  <!-- The frame to flat relative to -->
+  <arg name="flat_frame" default="map"/>
+
+  <!-- The name of the new frame -->
+  <arg name="new_name" default="fake"/>
+
+  <!-- static transform publisher setup for sensor frame -->
+  <node pkg="tf" type="static_transform_publisher" name="sensor_frame_broadcaster" args="0 0 0.27 0 0 0 $(arg name)/$(arg new_name) $(arg name)/$(arg new_name)/sensor_$(arg new_name) 100" />
+
+  <node pkg="z_axis_flattener" type="z_axis_flattener" name="z_axis_flattener">
+    <param name="name" value="$(arg name)"/>
+    <param name="flat_frame" value="$(arg flat_frame)"/>
+    <param name="new_name" value="$(arg new_name)"/>
+  </node>
+
+</launch>

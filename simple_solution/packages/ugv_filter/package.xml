@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ugv_filter</name>
+  <version>1.0.0</version>
+  <description>
+    Filters points out of a sensor_msgs/PointCloud2 message, based on their slopes in relationship with it's azimuth angle.
+  </description>
+
+  <author email="jtlorente@ekumenlabs.com">Jose Tomas Lorente</author>
+
+  <maintainer email="jtlorente@ekumenlabs.com">Jose Tomas Lorente</maintainer>
+
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>pcl_conversions</build_depend>
+  <build_depend>pcl_ros</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>pcl_conversions</exec_depend>
+  <exec_depend>pcl_ros</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>tf2_sensor_msgs</depend>
+
+</package>

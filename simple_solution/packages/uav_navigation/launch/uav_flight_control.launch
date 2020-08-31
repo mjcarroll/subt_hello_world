@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<launch>
+  <arg name="name" />
+  <arg name="hover" default="0.1"/>
+  <arg name="lidar" default="0.05"/>
+
+  <group ns="$(arg name)">
+    <node pkg="uav_navigation" type="hover_controller" name="uav_hover_control" output="screen" >
+      <!-- parameters that can be changed if necessary -->
+      <!-- resetVerticalVel, maintainVerticalVel, hoverHeight, hoverTolerance, minLidarDist -->
+      <param name="resetVerticalVel" value=".4"/>
+      <param name="maintainVerticalVel" value=".1"/>
+      <param name="hoverHeight" value=".75"/>
+      <param name="hoverTolerance" value=".01"/>
+      <param name="minLidarDist" value=".25"/>
+    </node>
+
+    <node pkg="uav_navigation" type="cmd_vel_filter" name="uav_cmd_vel_filter" />
+  </group>
+</launch>

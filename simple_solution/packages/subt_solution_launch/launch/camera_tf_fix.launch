@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <!-- The name/namespace of this robot -->
+  <arg name="name" default="X1" />
+  <arg name="prefix" default="front" />
+  <arg name="depth_topic" default="rgbd_camera/depth/points" />
+
+  <!-- static transform publisher setup -->
+  <node pkg="tf" type="static_transform_publisher" name="camera_frame_broadcaster" args="0 0 0 -1.57079632679 0 -1.57079632679 $(arg name)/base_link/camera_$(arg prefix) $(arg name)/base_link/camera_frame 100" />
+
+  <!-- camera relay node -->
+  <node pkg="camera_fix" type="camera_fix" name="camera_fix">
+    <remap from="input/image_raw" to="$(arg prefix)/image_raw" />
+    <remap from="input/camera_info" to="$(arg prefix)/camera_info" />
+    <remap from="output/image_raw" to="$(arg prefix)/fixed/image_raw" />
+    <remap from="output/camera_info" to="$(arg prefix)/fixed/camera_info" />
+    <param name="new_frame_id" value="$(arg name)/base_link/camera_frame"/>
+  </node>
+
+</launch>

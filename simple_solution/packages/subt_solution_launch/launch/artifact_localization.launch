@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <!-- The name/namespace of this robot -->
+  <arg name="name" default="X1" />
+
+  <arg name="cam_info_topic" default="front/fixed/camera_info" />
+  <arg name="depth_topic" default="rgbd_camera/depth/points" />
+  <arg name="unreported_artifacts_topic" default="num_unreported_artifacts" />
+  <arg name="num_detected_artifacts_topic" default="num_detected_artifacts" />
+  <arg name="artifact_origin_frame" default="artifact_origin" />
+  <arg name="external_robot_tolerance" default="3.0" />
+
+  <!-- artifact localization node -->
+  <node pkg="artifact_localization" type="locate_artifacts" name="artifact_localizer_node">
+    <remap from="input/camera_info" to="$(arg cam_info_topic)" />
+    <remap from="input/point_cloud" to="$(arg depth_topic)" />
+    <remap from="input/bounding_boxes" to="darknet_ros/bounding_boxes" />
+    <remap from="output/unreported_artifacts" to="$(arg unreported_artifacts_topic)" />
+    <remap from="output/num_detected_artifacts" to="$(arg num_detected_artifacts_topic)" />
+    <param name="camera_frame" value="$(arg name)/base_link/camera_front"/>
+    <param name="object_frame" value="object_frame"/>
+    <param name="map_frame" value="$(arg name)/map"/>
+    <param name="artifact_origin_frame" value="$(arg artifact_origin_frame)"/>
+    <param name="base_link_frame" value="$(arg name)"/>
+    <param name="name" value="$(arg name)"/>
+    <param name="external_robot_tolerance" value="$(arg external_robot_tolerance)"/>
+  </node>
+
+</launch>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launch>
+  <!-- The name/namespace of this robot -->
+  <arg name="name"/>
+
+  <!-- The pointcloud topic of this robot -->
+  <arg name="pc_topic" default="points"/>
+
+  <!-- UGV filter params -->
+  <!-- The height to flaten to -->
+  <arg name="flat_height" default="-0.25"/>
+  <!-- The frame to flat relative to -->
+  <arg name="flat_frame" default="map"/>
+  <!-- If filter is deleting or flatenning -->
+  <arg name="delete" default="true"/>
+  <!-- The max slope to filter from -->
+  <arg name="slope" default="40.0"/>
+
+  <!-- The topic of the UGV filter's output -->
+  <arg name="ugv_filter_output_topic" default="ugv_filter_points"/>
+
+  <!-- artifact localization and camera_tf_fix node parameters (default depth is for lidar) -->
+  <arg name="cam_info_topic" default="front/fixed/camera_info" />
+  <arg name="depth_topic" default="points" />
+  <arg name="prefix" default="front" />
+  <arg name="external_robot_tolerance" default="1.5" />
+
+  <!-- custom navigation control params -->
+  <arg name="debug" default="true" />
+  <arg name="min_battery_percentage" default="0.35" />
+  <arg name="has_odom" default="false" />
+  <arg name="map_frame" default="map" />
+  <arg name="path_distance" default="3.0" />
+  <arg name="lock_percentage" default="0.7" />
+  <arg name="node_timeout" default="60" />
+  <arg name="wait_seconds_before_exploring" default="0.0" />
+  <arg name="distance_until_merge" default="8.0" />
+  <arg name="starting_node_x_pos" default="5.0" />
+  <arg name="starting_node_y_pos" default="0.0" />
+
+  <!-- TF flattener node args -->
+  <arg name="new_name" value="fake" />
+
+  <!-- Info for data we want to save periodically/as a backup in cloudsim -->
+  <arg name="map_topic_original" default="map"/>
+  <arg name="trajectory_topic_original" default="trajectory_node_list"/>
+  <arg name="save_rate" default="300"/>
+  <arg name="map_topic_logging" default="/robot_data/map"/>
+  <arg name="trajectory_topic_logging" default="/robot_data/trajectory_list"/>
+
+  <arg name="artifact_origin_frame" default="artifact_origin"/>
+
+  <!-- communications parameters -->
+  <arg name="graph_port" default="5000"/>
+  <arg name="pose_port" default="5001"/>
+
+  <group ns="$(arg name)">
+    <!-- Cartographer setup -->
+    <include file="$(find subt_solution_launch)/launch/cartographer.launch">
+      <arg name="name" value="$(arg name)"/>
+      <arg name="mode" value="3d_UAV"/>
+    </include>
+
+    <!-- move_base setup -->
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" >
+      <remap from="cmd_vel" to="move_base_cmd_vel" />
+
+      <param name="base_global_planner" value="global_planner/GlobalPlanner"/>
+      <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/>
+      <rosparam file="$(find subt_solution_launch)/config/move_base/planner_UAV.yaml" command="load" />
+
+      <rosparam file="$(find subt_solution_launch)/config/move_base/costmap_common_UAV.yaml" command="load" ns="global_costmap" subst_value="true"/>
+      <rosparam file="$(find subt_solution_launch)/config/move_base/costmap_common_UAV.yaml" command="load" ns="local_costmap" subst_value="true"/>
+      <rosparam file="$(find subt_solution_launch)/config/move_base/costmap_local.yaml" command="load" ns="local_costmap" subst_value="true"/>
+      <rosparam file="$(find subt_solution_launch)/config/move_base/costmap_global.yaml" command="load" ns="global_costmap" subst_value="true"/>
+    </node>
+
+    <!-- z axis fix to keep the frames and sensor data properly overlayed on the move_base costmap -->
+    <include file="$(find subt_solution_launch)/launch/z_axis_flattener.launch">
+      <arg name="name" value="$(arg name)" />
+      <arg name="flat_frame" value="$(arg flat_frame)" />
+      <arg name="new_name" value="$(arg new_name)" />
+    </include>s
+
+    <!-- ugv_filter to eliminate slopes (for when UAV flies close to ground) -->
+    <node pkg="ugv_filter" type="ugv_filter" name="ugv_filter">
+      <remap from="input" to="$(arg pc_topic)" />
+      <remap from="output" to="$(arg ugv_filter_output_topic)" />
+      <param name="name" value="$(arg name)"/>
+      <param name="slope" value="$(arg slope)"/>
+      <param name="flat_height" value="$(arg flat_height)"/>
+      <param name="flat_frame" value="$(arg flat_frame)"/>
+      <param name="delete" value="$(arg delete)"/>
+      <param name="new_name" value="$(arg new_name)"/>
+    </node>
+
+    <!-- uav_filter node -->
+    <node pkg="uav_filter" type="uav_filter" name="uav_filter">
+      <remap from="input" to="$(arg ugv_filter_output_topic)" />
+      <remap from="output" to="points_filtered_z" />
+      <param name="name" value="$(arg name)"/>
+      <param name="x_max" value="0.45"/>
+      <param name="x_min" value="-0.45"/>
+      <param name="y_max" value="0.45"/>
+      <param name="y_min" value="-0.45"/>
+      <param name="z_max" value="0.3"/>
+      <param name="z_min" value="-0.3"/>
+    </node>
+
+    <!-- uav flight controller -->
+    <node pkg="uav_navigation" type="hover_controller" name="uav_hover_control" >
+      <param name="resetVerticalVel" value=".3"/>
+      <param name="maintainVerticalVel" value=".1"/>
+      <param name="hoverHeight" value="1.0"/>
+      <param name="hoverTolerance" value=".01"/>
+      <param name="minLidarDist" value=".25"/>
+    </node>
+
+    <!-- uav cmd_vel_filter. Fuses together cmd_vels from flight controller and move_base -->
+    <node pkg="uav_navigation" type="cmd_vel_filter" name="uav_cmd_vel_filter" />
+
+    <!-- blob detector -->
+    <include file="$(find subt_solution_launch)/launch/blob_detection.launch">
+      <arg name="prefix" default="$(arg prefix)" />
+    </include>
+
+    <!-- tf camera fix, allows lidar usage with perception -->
+    <include file="$(find subt_solution_launch)/launch/camera_tf_fix.launch">
+      <arg name="prefix" default="$(arg prefix)" />
+      <arg name="depth_topic" default="$(arg depth_topic)" />
+      <arg name="name" value="$(arg name)"/>
+    </include>
+
+    <!-- artifact localization -->
+    <include file="$(find subt_solution_launch)/launch/artifact_localization.launch">
+      <arg name="cam_info_topic" value="$(arg cam_info_topic)" />
+      <arg name="depth_topic" default="$(arg depth_topic)" />
+      <arg name="name" default="$(arg name)" />
+      <arg name="artifact_origin_frame" value="$(arg artifact_origin_frame)"/>
+      <arg name="external_robot_tolerance" value="$(arg external_robot_tolerance)"/>
+    </include>
+
+    <!-- Control Stack -->
+    <node pkg="subt_robot_control" type="subt_robot_control_node" name="control_node" output="screen">
+      <param name="artifact_origin_frame" value="$(arg artifact_origin_frame)" />
+      <param name="debug" value="$(arg debug)" />
+      <param name="graph_port" value="$(arg graph_port)"/>
+      <param name="has_odom" value="$(arg has_odom)" />
+      <param name="lock_percentage" value="$(arg lock_percentage)" />
+      <param name="distance_until_merge" value="$(arg distance_until_merge)" />
+      <param name="map_frame" value="$(arg map_frame)" />
+      <param name="min_battery_percentage" value="$(arg min_battery_percentage)" />
+      <param name="name" value="$(arg name)"/>
+      <param name="node_timeout" value="$(arg node_timeout)"/>
+      <param name="path_distance" value="$(arg path_distance)" />
+      <param name="wait_seconds_before_exploring" value="$(arg wait_seconds_before_exploring)" />
+      <param name="pose_port" value="$(arg pose_port)"/>
+      <param name="robot_base_frame" value="$(arg name)/$(arg new_name)"/>
+      <param name="starting_node_x_pos" value="$(arg starting_node_x_pos)"/>
+      <param name="starting_node_y_pos" value="$(arg starting_node_y_pos)"/>
+    </node>
+
+    <!-- clousim debug info -->
+    <include file="$(find subt_solution_launch)/launch/cloudsim_debug.launch"/>
+
+    <!-- periodic data saving (part of cloudsim debug info) -->
+    <include file="$(find subt_solution_launch)/launch/periodic_data_saver.launch">
+      <arg name="map_topic_original" value="$(arg map_topic_original)"/>
+      <arg name="trajectory_topic_original" value="$(arg trajectory_topic_original)"/>
+      <arg name="save_rate" value="$(arg save_rate)"/>
+      <arg name="map_topic_logging" value="$(arg map_topic_logging)"/>
+      <arg name="trajectory_topic_logging" value="$(arg trajectory_topic_logging)"/>
+    </include>
+  </group>
+</launch>

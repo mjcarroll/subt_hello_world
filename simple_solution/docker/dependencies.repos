@@ -1,0 +1,13 @@
+repositories:
+  darknet_ros:
+    type: git
+    url: https://github.com/leggedrobotics/darknet_ros.git
+    version: master
+  subt:
+    type: git
+    url: https://github.com/osrf/subt.git
+    version: master
+  forked_global_planner:
+    type: git
+    url: https://github.com/mjcarroll/navigation.git
+    version: segfault_at_border

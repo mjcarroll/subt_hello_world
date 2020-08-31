@@ -1,0 +1,30 @@
+<launch>
+  <node name="traversed_path_debug_relay" pkg="topic_tools" type="relay" args="intopic intopic_relay">
+    <remap from="intopic" to="pathing"/>
+    <remap from="intopic_relay" to ="/robot_data/pathing"/>
+  </node>
+  <node name="artifact_marker_debug_relay" pkg="topic_tools" type="relay" args="intopic intopic_relay">
+    <remap from="intopic" to="artifact_marker"/>
+    <remap from="intopic_relay" to ="/robot_data/artifact_marker"/>
+  </node>
+  <!-- <node name="robot_controller_state_debug_relay" pkg="topic_tools" type="relay" args="intopic intopic_relay">
+    <remap from="intopic" to="robot_controller_state"/>
+    <remap from="intopic_relay" to ="/robot_data/robot_controller_state"/>
+  </node> -->
+  <node name="footprint_debug_relay" pkg="topic_tools" type="relay" args="intopic intopic_relay">
+    <remap from="intopic" to="move_base/local_costmap/footprint"/>
+    <remap from="intopic_relay" to ="/robot_data/move_base/local_costmap/footprint"/>
+  </node>
+  <node name="nav_goal_debug_relay" pkg="topic_tools" type="relay" args="intopic intopic_relay">
+    <remap from="intopic" to="move_base/current_goal"/>
+    <remap from="intopic_relay" to ="/robot_data/move_base/current_goal"/>
+  </node>
+  <node name="frontiers_relay" pkg="topic_tools" type="relay" args="intopic intopic_relay">
+    <remap from="intopic" to="candidate_frontiers"/>
+    <remap from="intopic_relay" to ="/robot_data/candidate_frontiers"/>
+  </node>
+  <node name="frontiers_circle_relay" pkg="topic_tools" type="relay" args="intopic intopic_relay">
+    <remap from="intopic" to="circle"/>
+    <remap from="intopic_relay" to ="/robot_data/circle"/>
+  </node>
+</launch>

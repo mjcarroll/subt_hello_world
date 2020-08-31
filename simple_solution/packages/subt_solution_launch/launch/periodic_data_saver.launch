@@ -1,0 +1,15 @@
+<launch>
+  <arg name="map_topic_original" default="map"/>
+  <arg name="trajectory_topic_original" default="trajectory_node_list"/>
+  <arg name="save_rate" default="300"/>
+  <arg name="map_topic_logging" default="/robot_data/map"/>
+  <arg name="trajectory_topic_logging" default="/robot_data/trajectory_list"/>
+
+  <node pkg="periodic_data_saver" type="periodic_data_saver_node" name="periodic_data_saver">
+    <param name="map_topic_original" value="$(arg map_topic_original)"/>
+    <param name="trajectory_topic_original" value="$(arg trajectory_topic_original)"/>
+    <param name="save_rate" value="$(arg save_rate)"/>
+    <param name="map_topic_logging" value="$(arg map_topic_logging)"/>
+    <param name="trajectory_topic_logging" value="$(arg trajectory_topic_logging)"/>
+  </node>
+</launch>

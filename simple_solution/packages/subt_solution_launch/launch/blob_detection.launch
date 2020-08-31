@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+  <!-- The name/namespace of this robot -->
+  <arg name="name"/>
+
+  <arg name="prefix"/>
+
+  <!-- blob detector node -->
+  <node pkg="blob_detection" type="blob_detection" name="detector_node">
+    <remap from="input/image_raw" to="$(arg prefix)/fixed/image_raw" />
+    <remap from="output/bounding_boxes" to="darknet_ros/bounding_boxes" />
+    <remap from="output/debug_image" to="$(arg prefix)/fixed/debug" />
+  </node>
+
+</launch>
